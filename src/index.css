@@ -1,0 +1,317 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Inter:Regular";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+:root {
+  color: #ffffd7;
+  background: #242424;
+  font-family: "Inter:Regular", Inter, sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+}
+
+button {
+  color: inherit;
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 2px solid #ffff47;
+  outline-offset: 3px;
+}
+
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 86% 62% at 100% 50%, rgb(192 64 0 / 22%), transparent 72%),
+    radial-gradient(ellipse 60% 52% at 0% 0%, rgb(192 64 0 / 23%), transparent 72%),
+    radial-gradient(ellipse 54% 47% at 0% 100%, rgb(192 64 0 / 13%), transparent 75%),
+    #242424;
+}
+
+.mode-switcher {
+  position: absolute;
+  z-index: 2;
+  top: 32px;
+  left: 50%;
+  display: flex;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  transform: translateX(-50%);
+  padding: 8px;
+  border-radius: 20px;
+  background: #1f1f1f;
+}
+
+.mode-switcher button {
+  min-height: 35px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  font-size: 16px;
+  line-height: normal;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.mode-switcher button:active {
+  transform: scale(0.97);
+}
+
+.mode-switcher button.active {
+  background: #6d2401;
+}
+
+.screen-content {
+  display: flex;
+  min-height: 100dvh;
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 108px 32px 72px;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-screen {
+  flex-direction: column;
+  gap: 48px;
+}
+
+.track-heading {
+  text-align: center;
+}
+
+.track-heading h1,
+.track-heading p {
+  margin: 0;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.track-heading h1 {
+  overflow: hidden;
+  max-width: min(100vw - 64px, 620px);
+  font-size: 24px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track-heading p {
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.file-controls {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.drop-zone {
+  display: flex;
+  width: 100%;
+  height: 200px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  border: 8px solid #1f1f1f;
+  border-radius: 20px;
+  outline: 2px dashed #6d2401;
+  outline-offset: -16px;
+  background: #1f1f1f;
+  font-size: 16px;
+  cursor: pointer;
+  transition:
+    outline-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.drop-zone small {
+  font-size: 12px;
+}
+
+.drop-zone.dragging {
+  outline-color: #ffff47;
+  background: #29251e;
+}
+
+.playback-controls {
+  display: flex;
+  width: min(100%, 430px);
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.player-progress {
+  width: 100%;
+  padding: 14px 16px 11px;
+  border-radius: 14px;
+  background: rgb(31 31 31 / 82%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+}
+
+.player-progress input {
+  width: 100%;
+  height: 4px;
+  margin: 0;
+  accent-color: #c04000;
+  cursor: pointer;
+}
+
+.player-progress input:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.player-times {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: rgb(255 255 215 / 70%);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.primary-button {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(131deg, #c04000, #5a1e00);
+  box-shadow: 0 5px 18px rgb(0 0 0 / 18%);
+  font-size: 16px;
+  line-height: normal;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease;
+}
+
+.primary-button:active {
+  transform: scale(0.96);
+  filter: brightness(1.15);
+}
+
+.live-screen {
+  flex-direction: column;
+  gap: 48px;
+}
+
+.waveform {
+  display: block;
+  width: min(402px, calc(100vw - 32px));
+  height: auto;
+}
+
+.live-waveform {
+  display: flex;
+  width: min(402px, calc(100vw - 32px));
+  height: auto;
+  aspect-ratio: 402 / 231;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 10.75%;
+}
+
+.live-waveform span {
+  width: 14px;
+  height: calc(20px + var(--band-0, 0) * 175px);
+  max-height: 92%;
+  border-radius: 999px;
+  background: #ffff47;
+  box-shadow: 0 0 14px rgb(255 255 71 / 22%);
+  transition: height 90ms linear;
+}
+
+.live-waveform span:nth-child(2) {
+  height: calc(20px + var(--band-1, 0) * 175px);
+}
+
+.live-waveform span:nth-child(3) {
+  height: calc(20px + var(--band-2, 0) * 175px);
+}
+
+.live-waveform span:nth-child(4) {
+  height: calc(20px + var(--band-3, 0) * 175px);
+}
+
+.live-waveform span:nth-child(5) {
+  height: calc(20px + var(--band-4, 0) * 175px);
+}
+
+.live-waveform span:nth-child(6) {
+  height: calc(20px + var(--band-5, 0) * 175px);
+}
+
+.live-waveform span:nth-child(7) {
+  height: calc(20px + var(--band-6, 0) * 175px);
+}
+
+.status-message {
+  position: fixed;
+  right: 24px;
+  bottom: 20px;
+  left: 24px;
+  margin: 0;
+  color: rgb(255 255 215 / 72%);
+  font-size: 12px;
+  text-align: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 700px) {
+  .screen-content {
+    padding-inline: 56px;
+  }
+
+  .drop-zone {
+    height: 240px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
