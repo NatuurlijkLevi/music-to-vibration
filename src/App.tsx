@@ -14,7 +14,9 @@ const defaultTrack: TrackDetails = {
 function formatTime(seconds: number) {
   if (!Number.isFinite(seconds)) return "0:00";
   const minutes = Math.floor(seconds / 60);
-  return `${minutes}:${Math.floor(seconds % 60).toString().padStart(2, "0")}`;
+  return `${minutes}:${Math.floor(seconds % 60)
+    .toString()
+    .padStart(2, "0")}`;
 }
 
 function createRhythmDetector(binCount: number) {
@@ -82,10 +84,16 @@ function createRhythmDetector(binCount: number) {
     if (isOnset) {
       lastBeat = time;
       lastVibration = time;
-      const intensityBoost = Math.max(0, Math.min(24, (intensityRatio - 1) * 55));
+      const intensityBoost = Math.max(
+        0,
+        Math.min(24, (intensityRatio - 1) * 55),
+      );
       const absoluteBoost = Math.max(0, Math.min(32, (energy - 28) * 0.32));
       const beatPulse = Math.round(
-        Math.min(140, Math.max(55, 48 + flux * 2.2 + intensityBoost + absoluteBoost)),
+        Math.min(
+          140,
+          Math.max(55, 48 + flux * 2.2 + intensityBoost + absoluteBoost),
+        ),
       );
 
       if (isSwell) {
@@ -98,7 +106,11 @@ function createRhythmDetector(binCount: number) {
     if (isSwell) {
       lastSwell = time;
       lastVibration = time;
-      return [82, 45, Math.round(Math.min(145, 108 + (intensityRatio - 1) * 60))];
+      return [
+        82,
+        45,
+        Math.round(Math.min(145, 108 + (intensityRatio - 1) * 60)),
+      ];
     }
 
     if (isLoudRhythm) {
@@ -151,12 +163,18 @@ async function readId3(file: File): Promise<Partial<TrackDetails>> {
     let offset = 10;
 
     while (offset + 10 <= tagEnd) {
-      const frameId = String.fromCharCode(...bytes.subarray(offset, offset + 4));
+      const frameId = String.fromCharCode(
+        ...bytes.subarray(offset, offset + 4),
+      );
       if (!frameId.trim()) break;
       const frameSize =
         version === 4
           ? readSyncSafe(bytes, offset + 4)
-          : new DataView(bytes.buffer, bytes.byteOffset + offset + 4, 4).getUint32(0);
+          : new DataView(
+              bytes.buffer,
+              bytes.byteOffset + offset + 4,
+              4,
+            ).getUint32(0);
       if (frameSize <= 0 || offset + 10 + frameSize > tagEnd) break;
 
       const frame = bytes.subarray(offset + 10, offset + 10 + frameSize);
@@ -170,8 +188,14 @@ async function readId3(file: File): Promise<Partial<TrackDetails>> {
     const tail = new Uint8Array(await file.slice(-128).arrayBuffer());
     if (String.fromCharCode(...tail.subarray(0, 3)) === "TAG") {
       const decoder = new TextDecoder("iso-8859-1");
-      details.title ||= decoder.decode(tail.subarray(3, 33)).replace(/\0/g, "").trim();
-      details.artist ||= decoder.decode(tail.subarray(33, 63)).replace(/\0/g, "").trim();
+      details.title ||= decoder
+        .decode(tail.subarray(3, 33))
+        .replace(/\0/g, "")
+        .trim();
+      details.artist ||= decoder
+        .decode(tail.subarray(33, 63))
+        .replace(/\0/g, "")
+        .trim();
     }
   }
 
@@ -208,7 +232,8 @@ export default function App() {
     preload.preload = "auto";
     preload.src = defaultTrackAsset;
     preload.oncanplay = () => setMessage("Beethoven track ready");
-    preload.onerror = () => setMessage("The Beethoven track could not be loaded.");
+    preload.onerror = () =>
+      setMessage("The Beethoven track could not be loaded.");
     defaultPreloadRef.current = preload;
     setMessage("Loading Beethoven track...");
     preload.load();
@@ -245,7 +270,11 @@ export default function App() {
         title: metadata.title || fallbackTitle,
         artist: metadata.artist || "Unknown artist",
       });
-      setMessage(metadata.title || metadata.artist ? "Track details found" : "Ready to feel");
+      setMessage(
+        metadata.title || metadata.artist
+          ? "Track details found"
+          : "Ready to feel",
+      );
     } catch {
       setMessage("Ready to feel");
     }
@@ -263,12 +292,15 @@ export default function App() {
 
   const vibrateFile = async () => {
     if (!(await vibrationSupported())) {
-      setMessage("Vibration is not available. On iPhone, use the Feel the Sound app.");
+      setMessage("Vibration is not supported by iPhone. Use Android instead.");
       return;
     }
 
     try {
-      if (audioRef.current?.paused && audioRef.current.currentTime < audioRef.current.duration) {
+      if (
+        audioRef.current?.paused &&
+        audioRef.current.currentTime < audioRef.current.duration
+      ) {
         await audioRef.current.play();
         setIsPlaying(true);
         setMessage("Playing the rhythm as vibration");
@@ -361,7 +393,7 @@ export default function App() {
     }
 
     if (!(await vibrationSupported())) {
-      setMessage("Vibration is not available. On iPhone, use the Feel the Sound app.");
+      setMessage("Vibration is not supported by iPhone. Use Android instead.");
       return;
     }
 
@@ -466,7 +498,11 @@ export default function App() {
             >
               <span>{file ? file.name : "Beethoven track loaded"}</span>
               <small>or</small>
-              <span>{file ? "Choose a different file" : "Choose your own audio file"}</span>
+              <span>
+                {file
+                  ? "Choose a different file"
+                  : "Choose your own audio file"}
+              </span>
             </button>
           </div>
           <input
@@ -518,7 +554,11 @@ export default function App() {
           ) : (
             <img className="waveform" src={waveformAsset} alt="" />
           )}
-          <button className="primary-button" onClick={startListening} type="button">
+          <button
+            className="primary-button"
+            onClick={startListening}
+            type="button"
+          >
             {isListening ? "Stop Listening" : "Start Listening"}
           </button>
         </section>
