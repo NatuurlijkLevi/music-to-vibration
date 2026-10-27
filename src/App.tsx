@@ -291,10 +291,7 @@ export default function App() {
   };
 
   const vibrateFile = async () => {
-    if (!(await vibrationSupported())) {
-      setMessage("Vibration is not supported by iPhone. Use Android instead.");
-      return;
-    }
+    const hasHaptics = await vibrationSupported();
 
     try {
       if (
@@ -303,7 +300,11 @@ export default function App() {
       ) {
         await audioRef.current.play();
         setIsPlaying(true);
-        setMessage("Playing the rhythm as vibration");
+        setMessage(
+          hasHaptics
+            ? "Playing the rhythm as vibration"
+            : "Playing audio; haptics require the iOS app",
+        );
         return;
       }
 
@@ -358,7 +359,11 @@ export default function App() {
       };
       await context.resume();
       setIsPlaying(true);
-      setMessage("Playing the rhythm as vibration");
+      setMessage(
+        hasHaptics
+          ? "Playing the rhythm as vibration"
+          : "Playing audio; haptics require the iOS app",
+      );
       animationFrame = requestAnimationFrame(analyzePlayback);
       await audio.play();
     } catch {
@@ -392,12 +397,8 @@ export default function App() {
       return;
     }
 
-    if (!(await vibrationSupported())) {
-      setMessage("Vibration is not supported by iPhone. Use Android instead.");
-      return;
-    }
-
     try {
+      const hasHaptics = await vibrationSupported();
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const context = new AudioContext();
       const source = context.createMediaStreamSource(stream);
@@ -443,7 +444,11 @@ export default function App() {
 
       liveCleanupRef.current = cleanup;
       setIsListening(true);
-      setMessage("Listening to your surroundings");
+      setMessage(
+        hasHaptics
+          ? "Listening to your surroundings"
+          : "Listening; haptics require the iOS app",
+      );
       animationFrame = requestAnimationFrame(listen);
     } catch {
       setMessage("Microphone access is needed for live listening.");
