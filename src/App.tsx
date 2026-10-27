@@ -1,10 +1,11 @@
 import { ChangeEvent, DragEvent, useEffect, useRef, useState } from "react";
+import { playVibration, stopVibration, vibrationSupported } from "./haptics";
+import defaultTrackAsset from "./assets/beethoven-symphony-no9.mp3";
 
 type Mode = "upload" | "live";
 type TrackDetails = { title: string; artist: string };
 
 const waveformAsset = "/assets/e06ad.svg";
-const defaultTrackAsset = "/audio/beethoven-symphony-no9.mp3";
 const defaultTrack: TrackDetails = {
   title: "Symphony no9 - Movement 1",
   artist: "Beethoven",
@@ -198,7 +199,7 @@ export default function App() {
     return () => {
       playbackCleanupRef.current?.();
       liveCleanupRef.current?.();
-      navigator.vibrate?.(0);
+      stopVibration();
     };
   }, []);
 
@@ -261,8 +262,8 @@ export default function App() {
   };
 
   const vibrateFile = async () => {
-    if (!navigator.vibrate) {
-      setMessage("Vibration is not supported by this browser.");
+    if (!(await vibrationSupported())) {
+      setMessage("Vibration is not available. On iPhone, use the Feel the Sound app.");
       return;
     }
 
@@ -293,7 +294,7 @@ export default function App() {
       const cleanup = () => {
         cancelAnimationFrame(animationFrame);
         audio.pause();
-        navigator.vibrate?.(0);
+        stopVibration();
         void context.close();
         if (objectUrl) URL.revokeObjectURL(objectUrl);
         audioRef.current = null;
@@ -305,7 +306,7 @@ export default function App() {
         if (!audio.paused) {
           analyser.getByteFrequencyData(frequencies);
           const vibrationPattern = detectRhythm(frequencies, time);
-          if (vibrationPattern) navigator.vibrate(vibrationPattern);
+          if (vibrationPattern) playVibration(vibrationPattern);
         }
 
         if (time - lastProgressUpdate >= 150) {
@@ -337,7 +338,7 @@ export default function App() {
 
   const stopFile = () => {
     audioRef.current?.pause();
-    navigator.vibrate?.(0);
+    stopVibration();
     setIsPlaying(false);
     setMessage("Playback paused");
   };
@@ -345,7 +346,7 @@ export default function App() {
   const seekPlayback = (time: number) => {
     if (audioRef.current) audioRef.current.currentTime = time;
     setCurrentTime(time);
-    navigator.vibrate?.(0);
+    stopVibration();
   };
 
   const startListening = async () => {
@@ -356,6 +357,11 @@ export default function App() {
 
     if (!navigator.mediaDevices?.getUserMedia) {
       setMessage("Microphone access is not supported by this browser.");
+      return;
+    }
+
+    if (!(await vibrationSupported())) {
+      setMessage("Vibration is not available. On iPhone, use the Feel the Sound app.");
       return;
     }
 
@@ -389,7 +395,7 @@ export default function App() {
         });
 
         const vibrationPattern = detectRhythm(levels, time);
-        if (vibrationPattern) navigator.vibrate?.(vibrationPattern);
+        if (vibrationPattern) playVibration(vibrationPattern);
         animationFrame = requestAnimationFrame(listen);
       };
 
@@ -397,7 +403,7 @@ export default function App() {
         cancelAnimationFrame(animationFrame);
         stream.getTracks().forEach((track) => track.stop());
         void context.close();
-        navigator.vibrate?.(0);
+        stopVibration();
         setIsListening(false);
         setMessage("Live listening stopped");
         liveCleanupRef.current = null;
@@ -416,7 +422,7 @@ export default function App() {
     if (nextMode === mode) return;
     playbackCleanupRef.current?.();
     liveCleanupRef.current?.();
-    navigator.vibrate?.(0);
+    stopVibration();
     setIsPlaying(false);
     setMessage("");
     setMode(nextMode);
